@@ -1,0 +1,11 @@
+---
+
+- hosts: 192.168.143.201
+  remote_user: root
+  roles:
+    - { role: pull_images }
+
+- hosts: 192.168.143.202
+  remote_user: root
+  roles:
+    - { role: pull_images }

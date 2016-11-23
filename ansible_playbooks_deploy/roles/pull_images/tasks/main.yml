@@ -1,0 +1,24 @@
+---
+
+- name: pull docker images
+  docker_image:
+    name: "docker.wanglei.net/{{ job_name }}:{{ time }}"
+    pull: True
+
+- name: delete old container
+  docker_container:
+    name: "docker.wanglei.net/{{ job_name }}:{{ time }}"
+    state: absent
+
+- name: run docker container
+  docker_container:
+    name: "{{ job_name }}"
+    image: "docker.wanglei.net/{{ job_name }}:{{ time }}"
+    hostname: "{{ job_name }}"
+    ports:
+      - "{{ http_port }}:8080"
+      - "{{ shutdown_port }}:8005"
+      - "{{ ajp_port }}:8009"
+      - "{{ redirect_port }}:8443"
+    volumes:
+      - /data/{{ job_name }}:/usr/local/tomcat/logs 
