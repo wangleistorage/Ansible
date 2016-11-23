@@ -1,0 +1,4 @@
+---
+
+- name: echo ooo >> /tmp/files
+  shell: echo "ooo" >> /tmp/files

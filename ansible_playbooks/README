@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# playbook/
+#     ---> ./host   :  host lists 
+#     ---> ./README :  usage doc
+#     ---> ./*.yml  :  all yml file
+#     ---> ./roles  :  all roles file 
+
+Usage :
+ansible-playbook -i hosts playbooks/xxx.yml -e "target=ip_addr"
+ansible-playbook -i hosts playbooks/tomcat.yml -e "target=ip_addr name=channelui-ci1 id=0"
+
+-i    : define hosts file
+-e    : extra parameter
+target: define dest host
+name  : define tomcat name
+id    : define tomcat id num
+
+# (1)、system initialization
+# ansible-playbook -i hosts playbooks/system_init.yml -e "target=192.168.143.201"
+
+# (2)、logrotate
+# ansible-playbook -i hosts playbooks/logrotate.yml -e "target=192.168.143.201"
+
+# (3)、install zabbix client
+# ansible-playbook -i hosts playbooks/zabbix_client.yml -e "target=192.168.143.201"
+
+# (4)、install redis server
+# ansible-playbook -i hosts playbooks/redis.yml -e "target=192.168.143.201"
+
+# (5)、install mysql server
+# ansible-playbook -i hosts playbooks/mysql.yml -e "target=192.168.143.201"
+
+# (6)、install jdk
+# ansible-playbook -i hosts playbooks/jdk.yml -e "target=192.168.143.201"
+
+# (7)、install tomcat
+# ansible-playbook -i hosts playbooks/tomcat.yml -e "target=192.168.143.201 name=channelui-ci1 id=0"
+# ansible-playbook -i hosts playbooks/tomcat.yml -e "target=192.168.143.201 name=portalui-preview2 id=1"

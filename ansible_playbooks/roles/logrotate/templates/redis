@@ -1,0 +1,14 @@
+{{ redis_logs_path }}/redis.log
+{
+	rotate 14
+        daily
+        dateext
+        copytruncate
+        compress
+        ifempty
+        missingok
+	postrotate
+        find {{ redis_logs_path }} \( -name "*.txt" -o -name "*.log" \) -mtime +0 -exec rm -rf {} \;
+        endscript	
+}
+

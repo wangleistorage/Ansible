@@ -1,0 +1,13 @@
+{{ tomcat_logs_path }}/catalina.out
+{
+        rotate 14
+        daily
+        dateext
+        copytruncate
+        compress
+        ifempty
+        missingok
+        postrotate
+        find {{ tomcat_logs_path }} \( -name "*.txt" -o -name "*.log" \) -mtime +0 -exec rm -rf {} \;
+        endscript
+}

@@ -1,0 +1,9 @@
+redis_version: redis-3.2.4
+redis_url: "http://download.redis.io/releases/{{ redis_version }}.tar.gz"
+redis_path: /usr/local/redis
+redis_pass: 123456
+redis_data_path: "{{ redis_path }}/data"
+redis_logs_path: "{{ redis_path }}/logs"
+redis_package: "{{ redis_version}}.tar.gz"
+
+service_path: /usr/local

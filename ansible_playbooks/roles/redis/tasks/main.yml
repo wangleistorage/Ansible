@@ -1,0 +1,56 @@
+---
+- name: check port is listening
+  shell: netstat -anpt | grep LISTEN | grep -i redis | grep 6379
+  register: port
+  ignore_errors: True
+
+- name: debug
+  fail: msg="the port is listening, exit ..."
+  when: port.rc == 0
+
+- name: check redis path and get
+  stat: path={{ redis_path }}
+  register: path
+
+- name: check path
+  fail: msg="the path exists, exit ..."
+  when: path.stat.exists == true
+
+- name: wget redis package
+  get_url: dest={{ service_path }} url={{ redis_url }}
+
+- name: unarchive package
+  unarchive: src={{ service_path}}/{{ redis_version }}.tar.gz dest={{ service_path }} copy=no
+
+- name: delete redis package
+  file: path={{ service_path}}/{{ redis_version }}.tar.gz state=absent
+
+- name: redis make
+  shell: "make && make install"
+  args:
+    chdir: "{{ service_path }}/{{ redis_version }}"
+  
+
+- name: redis rename
+  shell: "mv {{ service_path }}/{{ redis_version }} {{ redis_path }}"
+
+- name: create data and logs path
+  file: path={{ item }} state=directory mode=0755 owner=root group=root
+  with_items:
+      - "{{ redis_data_path }}"
+      - "{{ redis_logs_path }}"
+
+- name: set sysctl parameter
+  shell: echo -e "\n#表示内核允许分配所有的物理内存，而不管当前的内存状态如何\nvm.overcommit_memory = 1" >> /etc/sysctl.conf
+
+- name: sysctl -p
+  shell: sysctl -p
+
+- name: set somaxconn parameter
+  shell: echo 511 > /proc/sys/net/core/somaxconn
+
+- name: disable transparent memory
+  shell: echo never > /sys/kernel/mm/transparent_hugepage/enabled
+
+- name: copy redis.conf
+  template: src=redis.conf dest={{ redis_path }}/redis.conf  owner=root group=root mode=0644

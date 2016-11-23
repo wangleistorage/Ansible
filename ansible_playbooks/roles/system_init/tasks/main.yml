@@ -1,0 +1,38 @@
+---
+
+# system initialization
+
+- name: set selinux
+  shell: /usr/sbin/setenforce 0
+  ignore_errors: True 
+
+- name: disable selinux
+  lineinfile: dest=/etc/selinux/config regexp=^SELINUX=enforcing line=SELINUX=disabled
+  ignore_errors: True
+
+- name: set dns
+  template: src=resolv.conf dest=/etc/resolv.conf
+
+- name: remove yum source
+  shell: rm -f /etc/yum.repos.d/*
+
+- name: wget aliyun yum source
+  get_url: dest=/etc/yum.repos.d/CentOS-Base.repo url={{ yum_source }} 
+
+- name: install dependent
+  shell: "yum -y install {{ yum_package }}"
+
+- name: set profile
+  template: src=profile dest=/etc/profile owner=root group=root mode=0644 
+
+- name: set limit
+  template: src=limits.conf dest=/etc/security/limits.conf owner=root group=root mode=0644 
+
+- name: set kernel parameter
+  template: src=sysctl.conf dest=/etc/sysctl.conf owner=root group=root mode=0644 
+
+- name: enable kernel parameter
+  shell: /sbin/sysctl -p
+
+- name: set cron time task
+  cron: name='Update time' minute='*/5' job="/usr/sbin/ntpdate 1.cn.pool.ntp.org"

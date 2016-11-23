@@ -1,0 +1,3 @@
+UserParameter=mysql.version,{{ mysql_path }}/bin/mysql -V 
+UserParameter=mysql.ping,{{ mysql_path }}/bin/mysqladmin -u{{ zabbix_user }} -p{{ zabbix_pass }} -S {{ mysql_sock}} ping | grep -c alive 
+UserParameter=mysql.status[*],{{ zabbix_path }}/shell/mysql_performance.sh $1 $2

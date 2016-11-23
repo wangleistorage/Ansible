@@ -1,0 +1,3 @@
+service_path: /usr/local
+jdk_package: jdk-8u111-linux-x64.tar.gz
+jdk_path: "{{ service_path }}/jdk"

@@ -1,0 +1,16 @@
+---
+
+- name: check directory
+  stat: path=/root/root
+  register: root
+
+- name: display debug
+  debug: msg={{ root }}
+
+- name: when
+  file: path=/root/root state=directory mode=0644
+  when: root.stat.isdir is not defined
+
+- name: when
+  file: path=/root/root state=directory mode=0644
+  when: root.stat.exists != true

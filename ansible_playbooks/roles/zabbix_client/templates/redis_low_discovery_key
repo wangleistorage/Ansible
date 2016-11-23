@@ -1,0 +1,2 @@
+UserParameter=zabbix_low_discovery[*],/bin/bash {{ zabbix_path }}/shell/redis_low_discovery.sh $1
+UserParameter=redis_stats[*],{{ redis_path }}/src/redis-cli -h {{ target }} -p $1 -a {{ redis_pass }} info|grep $2|cut -d : -f2

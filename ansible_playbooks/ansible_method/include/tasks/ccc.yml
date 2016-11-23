@@ -1,0 +1,4 @@
+---
+
+- name: echo ccc >> /tmp/files
+  shell: echo "ccc" >> /tmp/files

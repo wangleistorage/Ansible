@@ -1,0 +1,4 @@
+---
+
+- name: copy files to localhost /tmp
+  local_action: template src=files dest=/tmp/files 

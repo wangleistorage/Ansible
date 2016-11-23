@@ -1,0 +1,64 @@
+---
+
+# install zabbix agentd
+
+- name: check port is listening
+  shell: netstat -anpt | grep LISTEN | grep -i zabbix | grep 10050
+  register: port
+  ignore_errors: True
+
+- name: debug
+  fail: msg="the port is listening, exit ..."
+  when: port.rc == 0
+
+- name: check zabbix client path and get
+  stat: path={{ zabbix_path }}
+  register: path
+  ignore_errors: True
+
+- name: check path
+  fail: msg="the path exists, exit ..."
+  when: path.stat.exists == true
+
+- name: initialization
+  file: path=/etc/rc.d/rc.local owner=root group=root mode=0755
+
+- name: boot from start
+  shell: echo "{{ zabbix_path }}/sbin/zabbix_agentd" >> /etc/rc.d/rc.local
+
+- name: create user group
+  group: name=zabbix
+
+- name: create user
+  user: name=zabbix group=zabbix shell=/sbin/nologin state=present
+
+- name: install zabbix agent
+  unarchive: src={{ zabbix_package }} dest={{ service_path }}/ 
+
+- name: copy conf file
+  template: src=zabbix_agentd.conf dest={{ zabbix_path }}/etc/zabbix_agentd.conf
+
+- name: copy monitor script
+  template: src={{ item }} dest={{ zabbix_path }}/shell/{{ item }} mode=0755 owner=root group=root
+  with_items:
+      - "mysql_performance.sh"
+      - "nginx_status.sh"
+
+- name: copy monitor script
+  copy: src={{ item }} dest={{ zabbix_path }}/shell/{{ item }} mode=0755 owner=root group=root
+  with_items:
+      - "redis_low_discovery.sh"
+
+- name: copy monitor key
+  template: src={{ item }} dest={{ zabbix_path }}/etc/zabbix_agentd.conf.d/{{ item }} mode=0644 owner=root group=root
+  with_items:
+      - "mysql_performance_key"
+      - "nginx_status_key"
+      - "redis_low_discovery_key"
+
+- name: stop zabbix
+  shell: pkill -15 zabbix_agentd
+  ignore_errors: true
+
+- name: start zabbix
+  shell: "{{ zabbix_path }}/sbin/zabbix_agentd" 

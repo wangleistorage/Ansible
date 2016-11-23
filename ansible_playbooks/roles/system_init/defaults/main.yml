@@ -1,0 +1,5 @@
+yum_source: http://mirrors.aliyun.com/repo/Centos-7.repo
+yum_package: "tree openssh-clients sysstat wget curl curl-devel elinks gcc gcc-c++ make unzip vim cronie ntpdate procps rsync git ntp man mlocate telnet nmap zip gzip bzip2 bzip2-devel bc lrzsz net-tools psmisc"
+service_path: /usr/local
+dns1: 223.5.5.5
+dns2: 114.114.114.114

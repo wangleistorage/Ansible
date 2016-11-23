@@ -1,0 +1,8 @@
+tomcat_path: /usr/local/tomcats
+tomcat_logs_path: "{{ tomcat_path }}/*/logs"
+
+nginx_path: /usr/local/nginx
+nginx_logs_path: "{{ nginx_path }}/logs"
+
+redis_path: /usr/local/redis
+redis_logs_path: "{{ redis_path }}/logs"

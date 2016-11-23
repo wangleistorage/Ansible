@@ -1,0 +1,10 @@
+user:
+    hongxue:
+        group: hongxue
+        shell: /usr/sbin/nologin
+    xiaomao:
+        group: xiaomao
+        shell: /usr/sbin/nologin
+    yixiao:
+        group: yixiao
+        shell: /usr/sbin/nologin

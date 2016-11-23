@@ -1,0 +1,56 @@
+---
+
+# install mysql server
+- name: check port is listening
+  shell: netstat -anpt | grep LISTEN | grep -i mysql | grep 3306
+  register: port
+  ignore_errors: True
+
+- name: debug
+  fail: msg="the port is listening, exit ..."
+  when: port.rc == 0
+
+- name: check mysql path and get
+  stat: path={{ mysql_basepath }}
+  register: path
+  ignore_errors: True
+
+- name: check path
+  fail: msg="the path exists, exit ..."
+  when: path.stat.exists == true
+
+- name: install yum dependent
+  shell: "yum -y install {{ yum_package }}"
+
+- name: create mysql pass path
+  file: dest={{ mysql_passpath }} state=directory
+
+- name: generate mysql pass
+  shell: "echo {{ mysql_pass }} > {{ mysql_passpath }}/mysql_root"
+
+- name: create mysql group
+  group: name={{ mysql_group }}
+
+- name: create mysql user
+  user: name={{ mysql_user }} group={{ mysql_group }} shell=/sbin/nologin state=present
+
+- name: mysql unpackage
+  unarchive: src={{ mysql_package }} dest={{ service_path }}
+
+- name: rsync mysql conf file
+  template: src=my.cnf dest={{ mysql_conf }}
+
+- name: rsync mysql start file
+  template: src=mysql.server dest={{ mysql_start }} owner=root group=root mode=0700 
+
+- name: rsync mysql init script and permission script
+  template: src={{ item }} dest=/tmp
+  with_items:
+      - "mysql_install.sh"
+      - "mysql_authority.sh"
+
+- name: execute mysql init script and permission script
+  shell: "/bin/bash /tmp/{{ item }}"
+  with_items:
+      - "mysql_install.sh"
+      - "mysql_authority.sh"

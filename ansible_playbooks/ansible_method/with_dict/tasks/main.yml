@@ -1,0 +1,9 @@
+---
+
+- name: create group
+  group: name={{ item.key }}
+  with_dict: "{{ user }}"
+
+- name: create user
+  user: name={{ item.key }} groups={{ item.key }} shell={{ item.value.shell }} state=present
+  with_dict: "{{ user }}"

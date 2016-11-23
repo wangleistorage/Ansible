@@ -1,0 +1,12 @@
+---
+
+# Logrotate logs
+- name: install logrotate
+  yum: name=logrotate state=present 
+
+- name: copy logrotate script
+  template: src={{ item }} dest=/etc/logrotate.d/{{ item }}
+  with_items:
+      - nginx
+      - tomcat
+      - redis

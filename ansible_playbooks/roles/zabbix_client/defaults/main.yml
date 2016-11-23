@@ -1,0 +1,16 @@
+zabbix_server: 192.168.184.70
+zabbix_proxy: 10.252.97.64
+zabbix_path: /usr/local/zabbix
+zabbix_user: zabbix
+zabbix_pass: zabbix
+zabbix_package: zabbix-3.2.1.tar.gz 
+
+redis_path: /usr/local/redis
+redis_pass: 123456
+
+mysql_path: /usr/local/mysql
+mysql_pass: 123456
+mysql_sock: /tmp/mysql.sock
+
+service_path: /usr/local
+meta: linux 

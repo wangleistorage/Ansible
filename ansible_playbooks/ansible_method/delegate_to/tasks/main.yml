@@ -1,0 +1,8 @@
+---
+- name: check port is listening
+  shell: echo "111" >> /tmp/files1
+  delegate_to: 192.168.143.200
+
+- name: check port is listening
+  shell: echo "222" >> /tmp/files2
+

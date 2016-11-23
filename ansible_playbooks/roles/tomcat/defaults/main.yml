@@ -1,0 +1,13 @@
+service_path: /usr/local
+
+tomcat_package: apache-tomcat-7.0.72.tar.gz
+tomcat_version: apache-tomcat-7.0.72
+tomcat_path: "{{ service_path }}/tomcats"
+tomcat_user: tomcat
+tomcat_pass: "{{ tomcat_user }}"
+
+# tomcat-item变量(用于自动分配端口,支持全量、预发、测试环境)
+channelui: 0
+portalui: 1
+mobileui: 2
+new_item: 3

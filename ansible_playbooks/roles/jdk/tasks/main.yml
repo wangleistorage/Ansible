@@ -1,0 +1,28 @@
+---
+
+- name: check jdk path and get
+  stat: path={{ jdk_path }}
+  register: path
+
+- name: check path
+  fail: msg="the path exists, exit ..."
+  when: path.stat.exists == true
+
+- name: check variable
+  shell: grep -i JAVA_HOME /etc/profile
+  register: variable
+  ignore_errors: True
+
+- name: unpackage
+  unarchive: src={{ jdk_package }} dest={{ service_path }}
+  when: variable.rc != 0
+
+- name: add variable
+  shell: echo -e "\nJAVA_HOME={{ jdk_path }}\nJAVA_BIN={{ jdk_path }}/bin\nPATH=\$PATH:\$JAVA_BIN\nCLASSPATH=\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar\nexport JAVA_HOME JAVA_BIN PATH CLASSPATH" >> /etc/profile
+
+- name: check java version
+  shell: "{{ jdk_path }}/bin/java -version"
+  register: java_version
+
+- name: print java version
+  debug: msg={{ java_version.stderr }}

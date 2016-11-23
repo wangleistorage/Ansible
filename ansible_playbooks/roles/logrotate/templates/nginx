@@ -1,0 +1,10 @@
+{{ nginx_logs_path }}/*.log {
+	notifempty
+	daily
+	dateext
+	rotate 15
+	compress
+	sharedscripts
+	postrotate
+	endscript
+}

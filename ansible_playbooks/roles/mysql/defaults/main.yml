@@ -1,0 +1,17 @@
+yum_package: "tree openssh-clients sysstat wget elinks make unzip cronie ntpdate procps rsync git man mlocate telnet nmap gzip net-tools autoconf automake bc bind-utils bzip2 bzip2-devel curl curl-devel dmidecode e2fsprogs-devel expat expat-devel freetype* gcc gcc-c++ gettext gettext-devel glib2 glib2-devel glibc glibc-devel hdparm krb5-devel libaio libaio-devel libidn-devel libjpeg libpng libxml2 libxml2-devel lrzsz mlocate ncurses ncurses-devel net-snmp net-snmp-devel net-snmp-libs net-snmp-utils ntp openssh-clients openssl-devel pam-devel rsyslog-relp screen smartmontools strace telnet vim* yum-fastestmirror zip zlib-devel cmake readline readline-devel"
+
+mysql_user: mysql
+mysql_group: mysql
+mysql_basepath: /usr/local/mysql
+mysql_datapath: "{{ mysql_basepath }}/data"
+mysql_sock: /tmp/mysql.sock
+mysql_cmd: "{{ mysql_basepath }}/bin/mysql"
+mysql_port: 3306
+mysql_pass: xkeshi_root 
+mysql_passpath: /data/save
+mysql_package: percona-server-5.6.33-79.0.tar.gz
+mysql_log: /tmp/mysql.log
+mysql_start: /etc/init.d/mysqld
+mysql_conf: /etc/my.cnf
+
+service_path: /usr/local

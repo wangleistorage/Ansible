@@ -1,0 +1,38 @@
+---
+
+- name: check mysql path and get
+  stat: path={{ tomcat_path }}/{{ name }}
+  register: path
+  ignore_errors: True
+
+- name: check path
+  fail: msg="the path exists, exit ..."
+  when: path.stat.exists == true
+
+- name: create tomcat path
+  file: dest={{ tomcat_path }} state=directory
+
+- name: deploy tomcat
+  unarchive: src={{ tomcat_package }} dest=/tmp
+
+- name: rsync catalina.sh script
+  template: src=catalina.sh dest=/tmp/{{ tomcat_version }}/bin/catalina.sh mode=0755 owner=root group=root
+
+- name: rsync (context.xml|server.xml|tomcat-users.xml) file
+  template: src={{ item.conf }} dest={{ item.dest_conf }}
+  with_items:
+      - {conf: "context.xml", dest_conf: "/tmp/{{ tomcat_version }}/conf/context.xml"}
+      - {conf: "server.xml", dest_conf: "/tmp/{{ tomcat_version }}/conf/server.xml"}
+      - {conf: "tomcat-users.xml", dest_conf: "/tmp/{{ tomcat_version }}/conf/tomcat-users.xml"}
+
+- name: rsync modify.sh script
+  template: src=modify.sh dest=/tmp/modify.sh mode=0744 owner=root group=root
+
+- name: set tomcat port
+  shell: "/bin/bash /tmp/modify.sh"
+
+- name: delete script and modules
+  file: dest={{ item }} state=absent
+  with_items:
+      - "/tmp/modify.sh"
+      - "/tmp/{{ tomcat_version }}"
