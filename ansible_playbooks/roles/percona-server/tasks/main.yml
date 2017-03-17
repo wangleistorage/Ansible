@@ -1,0 +1,52 @@
+---
+
+- name: check mysql
+  stat: path={{ mysql_basepath }}
+  register: file
+  ignore_errors: True
+
+- name: check mysql
+  fail: msg="mysql service already install"
+  when: file.stat.exists == true
+
+- name: install yum dependent
+  shell: "sudo yum install -y {{ yum_package }}"
+
+- name: mysql unpackage
+  unarchive: src={{ mysql_package }}  dest={{ service_src_path }}
+
+- name: cmake compile configure
+  shell: "{{ cmake_para }}"
+  args:
+    chdir: "{{ service_src_path }}/{{ mysql_package_dir }}"
+
+- name: make compile
+  shell: "make"
+  args:
+    chdir: "{{ service_src_path }}/{{ mysql_package_dir }}"
+
+- name: make install
+  shell: "make install"
+  args:
+    chdir: "{{ service_src_path }}/{{ mysql_package_dir }}"
+
+- name: rsync mysql conf file
+  template: src=my.cnf dest={{ mysql_conf }}
+
+- name: rsync mysql.server file
+  template: src=mysql.server dest={{ mysql_basepath }}/support-files/mysql.server owner={{ mysql_user }} group={{ mysql_user }} mode=0700
+
+- name: rsync mysql init script and permission script
+  template: src={{ item }} dest=/tmp
+  with_items:
+      - "mysql_install.sh"
+      - "mysql_authority.sh"
+
+- name: execute mysql init script and permission script
+  shell: "/bin/bash /tmp/{{ item }}"
+  with_items:
+      - "mysql_install.sh"
+      - "mysql_authority.sh"
+
+- name: copy mysql start file
+  template: src=mysql.sh dest={{ mysql_basepath }} owner={{ mysql_user }} group={{ mysql_user }} mode=0700

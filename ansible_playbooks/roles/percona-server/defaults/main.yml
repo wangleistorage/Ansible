@@ -1,0 +1,18 @@
+yum_package: "tree openssh-clients sysstat curl curl-devel make unzip procps git zip gzip net-tools autoconf automake bind-utils bzip2 bzip2-devel dmidecode e2fsprogs-devel expat expat-devel freetype* gcc gcc-c++ gettext gettext-devel glib2 glib2-devel glibc glibc-devel hdparm krb5-devel libaio libaio-devel libidn-devel libjpeg libpng libxml2 libxml2-devel lrzsz mlocate ncurses ncurses-devel net-snmp net-snmp-devel net-snmp-libs net-snmp-utils ntp openssl-devel pam-devel rsync rsyslog-relp smartmontools strace vim* vixie-cron yum-fastestmirror zip zlib-devel cmake readline readline-devel bison"
+
+service_path: /home/tracker
+service_src_path: /home/tracker
+
+mysql_user: tracker
+mysql_group: tracker
+mysql_basepath: "{{ service_path }}/mysql"
+mysql_datapath: "{{ mysql_basepath }}/data"
+mysql_sock: /tmp/mysql.sock
+mysql_cmd: "{{ mysql_basepath }}/bin/mysql"
+mysql_port: 3306
+mysql_pass: xkeshi_root 
+mysql_package_dir: percona-server-5.6.33-79.0 
+mysql_package: "{{ mysql_package_dir }}.tar.gz"
+mysql_log: "{{ mysql_basepath }}/mysql.log"
+mysql_conf: "{{ mysql_basepath }}/my.cnf"
+cmake_para: "cmake -DCMAKE_INSTALL_PREFIX={{ mysql_basepath }} -DDEFAULT_CHARSET=utf8 -DDEFAULT_COLLATION=utf8_general_ci -DWITH_MYISAM_STORAGE_ENGING=1 -DWITH_INNOBASE_STORAGE_ENGING=1 -DWITH_SSL=yes"
