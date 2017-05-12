@@ -48,5 +48,8 @@
       - "mysql_install.sh"
       - "mysql_authority.sh"
 
+- name: set mysql cmd alias
+  shell: "echo 'alias mysql={{ mysql_basepath }}/bin/mysql' >> {{ service_path }}/.bashrc"
+
 - name: copy mysql start file
   template: src=mysql.sh dest={{ mysql_basepath }} owner={{ mysql_user }} group={{ mysql_user }} mode=0700

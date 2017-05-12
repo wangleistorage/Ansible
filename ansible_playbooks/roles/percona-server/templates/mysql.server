@@ -54,7 +54,7 @@ datadir=
 service_startup_timeout=900
 
 # Lock directory for RedHat / SuSE.
-lockdir='/var/lock/subsys'
+lockdir='{{ service_path }}'
 lock_file_path="$lockdir/mysql"
 
 # The following variables are only set for letting mysql.server find things.
@@ -63,14 +63,14 @@ lock_file_path="$lockdir/mysql"
 mysqld_pid_file_path=
 if test -z "$basedir"
 then
-  basedir=/home/tracker/mysql
-  bindir=/home/tracker/mysql/bin
+  basedir={{ mysql_basepath }}
+  bindir={{ mysql_basepath }}/bin
   if test -z "$datadir"
   then
-    datadir=/home/tracker/mysql/data
+    datadir={{ mysql_datapath }}
   fi
-  sbindir=/home/tracker/mysql/bin
-  libexecdir=/home/tracker/mysql/bin
+  sbindir={{ mysql_basepath }}/bin
+  libexecdir={{ mysql_basepath }}/bin
 else
   bindir="$basedir/bin"
   if test -z "$datadir"

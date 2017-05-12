@@ -1,0 +1,36 @@
+---
+
+# 安装Zabbix_Agent
+#- name: 创建Zabbix用户组
+#  group: name=zabbix
+
+#- name: 创建Zabbix用户
+#  user: name=zabbix group=zabbix shell=/sbin/nologin state=present
+
+- name: 添加自启动任务
+  cron: name="zabbix autostart" special_time="reboot" job="{{ zabbix_dir }}/sbin/zabbix_agentd"
+
+- name: 安装Zabbix_Agent 
+  unarchive: src=zabbix-3.2.1.tar.gz dest={{ service_dir }} 
+
+- name: 拷贝Zabbix配置文件
+  template: src=zabbix_agentd.conf dest={{ zabbix_dir }}/etc/zabbix_agentd.conf
+
+- name: 拷贝监控脚本
+  template: src={{ item }} dest={{ zabbix_dir }}/shell/{{ item }}
+  with_items:
+      - "mysql_performance.sh"
+      - "nginx_status.sh"
+
+- name: 拷贝Zabbix_Item文件
+  template: src={{ item }} dest={{ zabbix_dir }}/etc/zabbix_agentd.conf.d/{{ item }}
+  with_items:
+      - "mysql_performance_key"
+      - "nginx_status_key"
+
+- name: stop zabbbix 
+  shell: /usr/bin/pkill -9 zabbix_agentd
+  ignore_errors: true
+
+- name: 启动Zabbix
+  shell: "{{ zabbix_dir }}/sbin/zabbix_agentd"

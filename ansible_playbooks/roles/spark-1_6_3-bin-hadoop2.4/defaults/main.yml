@@ -1,0 +1,7 @@
+service_path: /home/tracker
+
+jdk_version: jdk1.8.0_51
+jdk_package: "{{ jdk_version }}.tar.gz"
+
+spark_version: spark-1.6.3-bin-hadoop2.4
+spark_package: "{{ spark_version }}.tgz"

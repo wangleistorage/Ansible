@@ -1,0 +1,50 @@
+---
+
+- name: check jdk
+  shell: java -version
+  ignore_errors: true
+  register: java_info
+
+- name: install jdk
+  unarchive: src={{ jdk_package }} dest={{ service_path }}
+  when: java_info.rc|int == 127
+
+- name: set jdk variable
+  shell: "echo {{ item }} >> {{ service_path }}/.bashrc"
+  with_items:
+      - ''
+      - 'export JAVA_HOME={{ service_path }}/{{ jdk_version }}'
+      - 'export PATH=$JAVA_HOME/bin:$PATH'
+      - 'export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar'
+  when: java_info.rc|int == 127
+
+- name: get spark info
+  stat: path={{ service_path }}/{{ spark_version }}
+  register: spark
+
+- name: check spark info
+  fail: msg="spark path already exists"
+  when: spark.stat.exists == True
+
+- name: deploy spark
+  unarchive: src={{ spark_package }} dest={{ service_path }}
+
+- name: create apps/work/checkpoint path
+  file: state=directory path={{ service_path }}/{{ spark_version}}/{{ item }}
+  with_items:
+      - "apps"
+      - "work"
+      - "checkpoint"
+      - "logs"
+
+- name: copy spark-env models
+  template: src={{ item }} dest={{ service_path }}/{{ spark_version }}/conf/{{ item }} mode=0755
+  with_items:
+      - "log4j.properties"
+      - "spark-env.sh"
+
+- name: copy spark start script
+  template: src={{ item }} dest={{ service_path }}/{{ spark_version }}/bin/{{ item }} mode=0755
+  with_items:
+      - "spark_master.sh"
+      - "spark_worker.sh"

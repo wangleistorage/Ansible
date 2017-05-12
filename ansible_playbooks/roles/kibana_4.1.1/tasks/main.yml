@@ -1,0 +1,23 @@
+---
+
+- name: get kibana path
+  stat: path={{ service_path }}/{{ kibana_version }}
+  register: status
+
+- name: check kibana path
+  fail: msg="kibana path already exists"
+  when: status.stat.exists != False
+
+- name: deploy kibaba_4.1.1
+  unarchive: src={{ kibana_version }}.tar.gz dest={{ service_path }}
+
+- name: copy kibana.yml conf
+  template: src=kibana.yml dest={{ service_path }}/{{ kibana_version }}/config/kibana.yml
+
+- name: create logs path
+  file: state=directory path={{ service_path }}/{{ kibana_version }}/logs
+
+- name: run kibana_4.1.1
+  shell: nohup ./kibana &
+  args: 
+    chdir: "{{ service_path }}/{{ kibana_version }}/bin"

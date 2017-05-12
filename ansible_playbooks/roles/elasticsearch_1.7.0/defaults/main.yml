@@ -1,0 +1,15 @@
+service_path: /home/tracker
+java_version: jdk1.8.0_51
+java_package: "{{ java_version }}.tar.gz"
+
+es_version: elasticsearch-1.7.0
+es_package: "{{ es_version }}.tar.gz"
+
+http_basic_user: elasticsearch_admin
+http_basic_password: L3U8xfch
+
+http_user1: es_admin1:tz9aAD9L
+http_user2: es_admin2:XoXi5BI2
+http_user3: es_admin3:49dPfsU3
+
+cluster_name: elasticsearch_log

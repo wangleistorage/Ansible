@@ -1,0 +1,15 @@
+# JDK变量
+jdk_dir: /usr/local/java
+jdk_pack: jdk1.7.0_45.tar.gz
+jdk_ver: jdk1.7.0_45
+
+# Zabbix_Agent变量
+zabbix_dir: /usr/local/zabbix
+zabbix_server: 10.252.97.64
+zabbix_user: zabbix
+zabbix_pass: zabbix
+
+mysql_path: /home/tracker/mysql
+service_dir: /usr/local
+
+Meta: Linux

@@ -1,0 +1,7 @@
+service_path: /home/tracker
+
+java_version: jdk1.8.0_51
+java_package: "{{ java_version }}.tar.gz"
+
+hadoop_version: hadoop-2.8.0
+hadoop_package: "{{ hadoop_version }}.tar.gz"

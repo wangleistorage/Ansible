@@ -1,0 +1,81 @@
+---
+
+#- name: get ulimits
+#  shell: ulimit -a |grep 'open files' | awk '{print $4}'
+#  register: ulimits
+
+#- name: check ulimits
+#  fail: msg="user tracker need ulimit 65536"
+#  when: ulimits.stdout|int < 65536
+
+#- name: get vm.max_map_count
+#  shell: /usr/sbin/sysctl -a |grep vm.max_map_count | awk '{print $3}'
+#  register: max_map_count
+
+#- name: check vm.max_map_count
+#  fail: msg="user tracker need core parameter value 262144"
+#  when: max_map_count.stdout|int < 262144
+
+- name: check jdk
+  shell: java -version
+  ignore_errors: true
+  register: java_info
+
+- name: install jdk
+  unarchive: src={{ java_package }} dest={{ service_path }}
+  when: java_info.rc|int == 127
+
+- name: set jdk variable
+  shell: "echo {{ item }} >> {{ service_path }}/.bashrc"
+  with_items:
+      - ''
+      - 'export JAVA_HOME={{ service_path }}/{{ java_version }}'
+      - 'export PATH=$JAVA_HOME/bin:$PATH'
+      - 'export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar'
+  when: java_info.rc|int == 127
+
+- name: get elasticsearch path
+  stat: path={{ service_path }}/{{ es_version }}
+  register: status
+
+- name: check elasticsearch path
+  fail: msg="es path exists, please check path ..."
+  when: status.stat.exists == True
+
+- name: deploy elasticsearch
+  unarchive: src={{ es_package }} dest={{ service_path }}
+
+- name: create es data and logs path
+  shell: "mkdir -p {{ service_path }}/{{ es_version }}/{{ item }}"
+  with_items:
+      - "data"
+      - "logs"
+
+- name: copy elasticsearch.yml file
+  template: src=elasticsearch.yml dest={{ service_path }}/{{ es_version }}/config/elasticsearch.yml
+
+- name: copy elasticsearch.in.sh file
+  copy: src=elasticsearch.in.sh dest={{ service_path }}/{{ es_version }}/bin/elasticsearch.in.sh mode=0755
+
+#- name: install head and bigdesk plugin
+#  shell: "{{ service_path }}/{{ es_version }}/bin/plugin --install {{ item }}"
+#  with_items:
+#      - "mobz/elasticsearch-head"
+#      - "lukas-vlcek/bigdesk"
+#
+- name: create http basic plugin path
+  file: path={{ service_path }}/{{ es_version }}/plugins/http-basic state=directory mode=0755
+
+- name: install head and bigdesk plugin
+  unarchive: src={{ item }} dest={{ service_path }}/{{ es_version }}/plugins/
+  with_items:
+      - "head.tar.gz"
+      - "bigdesk.tar.gz"
+
+- name: install http basic plugin
+  copy: src=elasticsearch-http-basic-1.5.1.jar dest={{ service_path }}/{{ es_version }}/plugins/http-basic
+
+- name: run elasticsearch
+  shell: nohup ./elasticsearch -d &
+  args:
+    chdir: "{{ service_path }}/{{ es_version }}/bin"

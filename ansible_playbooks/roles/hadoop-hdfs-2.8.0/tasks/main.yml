@@ -1,0 +1,72 @@
+---
+
+- name: check jdk
+  shell: java -version
+  ignore_errors: true
+  register: java_info
+
+- name: install jdk
+  unarchive: src={{ java_package }} dest={{ service_path }}
+  when: java_info.rc|int == 127
+
+- name: set jdk variable
+  shell: "echo {{ item }} >> {{ service_path }}/.bashrc"
+  with_items:
+      - ''
+      - 'export JAVA_HOME={{ service_path }}/{{ java_version }}'
+      - 'export PATH=$JAVA_HOME/bin:$PATH'
+      - 'export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar'
+  when: java_info.rc|int == 127
+
+- name: get hadoop hdfs path
+  stat: path={{ service_path }}/{{ hadoop_version }}
+  register: status
+
+- name: check hadoop hdfs path
+  fail: msg="hadoop hdfs path exists, please check path ..."
+  when: status.stat.exists == True
+
+- name: deploy hadoop package
+  unarchive: src={{ hadoop_package }} dest={{ service_path }}
+
+- name: create directory
+  file: path={{ item }} state=directory
+  with_items:
+      - "{{ service_path }}/{{ hadoop_version }}/dfs/data"
+      - "{{ service_path }}/{{ hadoop_version }}/dfs/name"
+      - "{{ service_path }}/{{ hadoop_version }}/tmp"
+
+- name: copy conf file
+  template: src={{ item }} dest={{ service_path }}/{{ hadoop_version }}/etc/hadoop/{{ item }}
+  with_items:
+      - "core-site.xml"
+      - "hadoop-env.sh"
+      - "hdfs-site.xml"
+      - "mapred-site.xml"
+      - "slaves"
+      - "yarn-env.sh"
+      - "yarn-site.xml"
+
+- name: add script execute permission
+  file: path={{ service_path }}/{{ hadoop_version }}/{{ item }} mode=0755
+  with_items:
+      - "bin/hdfs"
+      - "sbin/start-dfs.sh"
+      - "sbin/stop-dfs.sh"
+      - "sbin/start-yarn.sh"
+      - "sbin/stop-yarn.sh"
+
+- name: format namenode
+  shell: ./bin/hdfs namenode -format
+  args:
+    chdir: "{{ service_path }}/{{ hadoop_version }}"
+
+#- name:  start dfs
+#  shell: ./sbin/start-dfs.sh
+#  args:
+#    chdir: "{{ service_path }}/{{ hadoop_version }}"
+
+#- name: start yarn
+#  shell: ./sbin/start-yarn.sh
+#  args:
+#    chdir: "{{ service_path }}/{{ hadoop_version }}"

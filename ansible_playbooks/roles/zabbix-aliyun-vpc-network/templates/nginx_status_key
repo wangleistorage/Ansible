@@ -1,0 +1,8 @@
+#nginx_status_key 
+UserParameter=nginx.accepts,{{ zabbix_dir }}/shell/nginx_status.sh accepts 
+UserParameter=nginx.handled,{{ zabbix_dir }}/shell/nginx_status.sh handled 
+UserParameter=nginx.requests,{{ zabbix_dir }}/shell/nginx_status.sh requests 
+UserParameter=nginx.connections.active,{{ zabbix_dir }}/shell/nginx_status.sh active 
+UserParameter=nginx.connections.reading,{{ zabbix_dir }}/shell/nginx_status.sh reading 
+UserParameter=nginx.connections.writing,{{ zabbix_dir }}/shell/nginx_status.sh writing 
+UserParameter=nginx.connections.waiting,{{ zabbix_dir }}/shell/nginx_status.sh waiting
